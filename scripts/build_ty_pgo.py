@@ -28,7 +28,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
-RUST_WORKSPACE_ROOT = REPOSITORY_ROOT / "ruff"
+RUST_WORKSPACE_ROOT = REPOSITORY_ROOT / "ruff-blender"
 DEPENDENCY_EXCLUDE_NEWER = "2026-08-06T08:40:30Z"
 EXCLUDED_DIRECTORIES = frozenset({"_tests", "_vendor", "test", "tests"})
 EXCLUDED_ENVIRONMENT_VARIABLES = (
@@ -178,7 +178,7 @@ def main() -> None:
     parser.add_argument(
         "--target-dir",
         type=Path,
-        help="Cargo target directory (default: CARGO_TARGET_DIR or ruff/target/ty-pgo)",
+        help="Cargo target directory (default: CARGO_TARGET_DIR or ruff-blender/target/ty-pgo)",
     )
     parser.add_argument(
         "--profile-dir",

@@ -26,7 +26,7 @@ RUN case "$TARGETPLATFORM" in \
     "linux/amd64") echo "x86_64-unknown-linux-musl" > rust_target.txt ;; \
     *) exit 1 ;; \
     esac
-COPY ruff/rust-toolchain.toml rust-toolchain.toml
+COPY ruff-blender/rust-toolchain.toml rust-toolchain.toml
 ARG RUSTUP_VERSION=1.29.2
 RUN curl --proto '=https' --tlsv1.2 -sSf \
     "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/$(uname -m)-unknown-linux-gnu/rustup-init" \
@@ -39,9 +39,9 @@ ENV PATH="$HOME/.cargo/bin:$PATH"
 RUN rustup target add $(cat rust_target.txt)
 
 # Build
-COPY ruff/crates crates
-COPY ruff/Cargo.toml Cargo.toml
-COPY ruff/Cargo.lock Cargo.lock
+COPY ruff-blender/crates crates
+COPY ruff-blender/Cargo.toml Cargo.toml
+COPY ruff-blender/Cargo.lock Cargo.lock
 COPY dist-workspace.toml ../dist-workspace.toml
 RUN cargo zigbuild --bin ty --target $(cat rust_target.txt) --release
 RUN cp target/$(cat rust_target.txt)/release/ty /ty

@@ -1,5 +1,5 @@
 [workspace]
-members = ["cargo:./ruff"]
+members = ["cargo:./ruff-blender"]
 packages = ["ty"]
 version = "0.0.98"
 

@@ -13,15 +13,15 @@ project_root="$(dirname "$script_root")"
 cd "$project_root"
 
 echo "Copying Rust toolchain from Ruff..."
-cp ./ruff/rust-toolchain.toml ./rust-toolchain.toml
+cp ./ruff-blender/rust-toolchain.toml ./rust-toolchain.toml
 
 echo "Updating lockfile..."
 uv lock --no-locked --default-index https://pypi.org/simple
 
 echo "Copying reference documentation from Ruff..."
-cp ./ruff/crates/ty/docs/cli.md ./docs/reference/
-cp ./ruff/crates/ty/docs/configuration.md ./docs/reference/
-cp ./ruff/crates/ty/docs/rules.md ./docs/reference/
-cp ./ruff/crates/ty/docs/environment.md ./docs/reference/
+cp ./ruff-blender/crates/ty/docs/cli.md ./docs/reference/
+cp ./ruff-blender/crates/ty/docs/configuration.md ./docs/reference/
+cp ./ruff-blender/crates/ty/docs/rules.md ./docs/reference/
+cp ./ruff-blender/crates/ty/docs/environment.md ./docs/reference/
 
 echo "Documentation has been copied from Ruff submodule"

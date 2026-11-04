@@ -66,7 +66,7 @@ jobs:
         with:
           image: python:3.13-bookworm@sha256:933b46a028fd786c9c3d426ebabc237e29a15912231ea8de576e95f0e4f41a4c
           artifacts: dist
-          rust-toolchain: ruff/rust-toolchain.toml
+          rust-toolchain: ruff-blender/rust-toolchain.toml
           run: |
             # pip builds outside /test, where the toolchain file no longer applies.
             rustup default "$(rustup show active-toolchain | cut -d ' ' -f1)"
@@ -121,7 +121,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -160,7 +160,7 @@ jobs:
           enable-cache: false
       - name: "Install LLVM profiling tools"
         id: pgo-toolchain
-        working-directory: ruff
+        working-directory: ruff-blender
         run: |
           rustup component add llvm-tools-preview
           echo "toolchain=$(rustc --version | cut -d ' ' -f2)" >> "$GITHUB_OUTPUT"
@@ -168,11 +168,11 @@ jobs:
         run: |
           python scripts/build_ty_pgo.py \
             --target aarch64-apple-darwin \
-            --target-dir "${{ github.workspace }}/ruff/target/ty-pgo" \
+            --target-dir "${{ github.workspace }}/ruff-blender/target/ty-pgo" \
             --train-only
 
-          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff/target/ty-pgo/ty.profile-hot-count")"
-          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
+          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profile-hot-count")"
+          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
       - name: "Prep README.md"
         run: python scripts/transform_readme.py
       - name: "Build wheels - aarch64"
@@ -204,7 +204,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -249,7 +249,7 @@ jobs:
       - name: "Install LLVM profiling tools"
         id: pgo-toolchain
         if: ${{ matrix.platform.target == 'x86_64-pc-windows-msvc' }}
-        working-directory: ruff
+        working-directory: ruff-blender
         shell: bash
         run: |
           rustup component add llvm-tools-preview
@@ -262,11 +262,11 @@ jobs:
 
           python scripts/build_ty_pgo.py \
             --target "${{ matrix.platform.target }}" \
-            --target-dir "${{ github.workspace }}/ruff/target/ty-pgo" \
+            --target-dir "${{ github.workspace }}/ruff-blender/target/ty-pgo" \
             --train-only
 
-          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff/target/ty-pgo/ty.profile-hot-count")"
-          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
+          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profile-hot-count")"
+          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
       - name: "Prep README.md"
         run: python scripts/transform_readme.py
       - name: "Build wheels"
@@ -282,7 +282,7 @@ jobs:
           XWIN_VERSION: 16
       - name: "Verify static Windows runtime"
         if: ${{ matrix.platform.target == 'x86_64-pc-windows-msvc' }}
-        working-directory: ruff
+        working-directory: ruff-blender
         shell: bash
         run: |
           LLVM_READOBJ="$(rustc --print sysroot)/lib/rustlib/${{ matrix.platform.target }}/bin/llvm-readobj.exe"
@@ -311,7 +311,7 @@ jobs:
         shell: bash
         run: |
           ARCHIVE_FILE=ty-${{ matrix.platform.target }}.zip
-          7z a $ARCHIVE_FILE ./ruff/target/${{ matrix.platform.target }}/release/ty.exe
+          7z a $ARCHIVE_FILE ./ruff-blender/target/${{ matrix.platform.target }}/release/ty.exe
           sha256sum $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -351,7 +351,7 @@ jobs:
       - name: "Install LLVM profiling tools"
         id: pgo-toolchain
         if: ${{ matrix.target == 'x86_64-unknown-linux-gnu' }}
-        working-directory: ruff
+        working-directory: ruff-blender
         run: |
           rustup component add llvm-tools-preview
           echo "toolchain=$(rustc --version | cut -d ' ' -f2)" >> "$GITHUB_OUTPUT"
@@ -360,14 +360,14 @@ jobs:
         run: |
           python scripts/build_ty_pgo.py \
             --target "${{ matrix.target }}" \
-            --target-dir "${{ github.workspace }}/ruff/target/ty-pgo" \
+            --target-dir "${{ github.workspace }}/ruff-blender/target/ty-pgo" \
             --train-only
 
-          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff/target/ty-pgo/ty.profile-hot-count")"
-          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT -Clink-arg=-Wl,--emit-relocs" >> "$GITHUB_ENV"
+          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profile-hot-count")"
+          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT -Clink-arg=-Wl,--emit-relocs" >> "$GITHUB_ENV"
           echo "MATURIN_STRIP=false" >> "$GITHUB_ENV"
           # maturin-action restores ownership of this directory after the container exits.
-          echo "CARGO_TARGET_DIR=$GITHUB_WORKSPACE/ruff/target" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$GITHUB_WORKSPACE/ruff-blender/target" >> "$GITHUB_ENV"
       - name: "Prep README.md"
         run: python scripts/transform_readme.py
       - name: "Build wheels"
@@ -400,8 +400,8 @@ jobs:
           )
           python scripts/build_ty_bolt.py \
             --llvm-dir "$llvm_dir/usr/lib/llvm-22" \
-            --pgo-dir ruff/target/ty-pgo \
-            --binary "ruff/target/${{ matrix.target }}/release/ty" \
+            --pgo-dir ruff-blender/target/ty-pgo \
+            --binary "ruff-blender/target/${{ matrix.target }}/release/ty" \
             --wheel dist/ty-*.whl
       - name: "Test wheel"
         if: ${{ startsWith(matrix.target, 'x86_64') }}
@@ -430,7 +430,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -466,7 +466,7 @@ jobs:
           enable-cache: false
       - name: "Install LLVM profiling tools"
         id: pgo-toolchain
-        working-directory: ruff
+        working-directory: ruff-blender
         run: |
           rustup component add llvm-tools-preview
           echo "toolchain=$(rustc --version | cut -d ' ' -f2)" >> "$GITHUB_OUTPUT"
@@ -474,11 +474,11 @@ jobs:
         run: |
           python scripts/build_ty_pgo.py \
             --target aarch64-unknown-linux-gnu \
-            --target-dir "${{ github.workspace }}/ruff/target/ty-pgo" \
+            --target-dir "${{ github.workspace }}/ruff-blender/target/ty-pgo" \
             --train-only
 
-          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff/target/ty-pgo/ty.profile-hot-count")"
-          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
+          PROFILE_HOT_COUNT="$(cat "${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profile-hot-count")"
+          echo "RUSTFLAGS=${RUSTFLAGS:+${RUSTFLAGS} }-Cprofile-use=${{ github.workspace }}/ruff-blender/target/ty-pgo/ty.profdata -Cllvm-args=--profile-summary-hot-count=$PROFILE_HOT_COUNT" >> "$GITHUB_ENV"
       - name: "Prep README.md"
         run: python scripts/transform_readme.py
       - name: "Build wheels"
@@ -517,7 +517,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -608,7 +608,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -675,7 +675,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"
@@ -746,7 +746,7 @@ jobs:
           ARCHIVE_FILE=$ARCHIVE_NAME.tar.gz
 
           mkdir -p $ARCHIVE_NAME
-          cp ruff/target/$TARGET/release/ty $ARCHIVE_NAME/ty
+          cp ruff-blender/target/$TARGET/release/ty $ARCHIVE_NAME/ty
           tar czvf $ARCHIVE_FILE $ARCHIVE_NAME
           shasum -a 256 $ARCHIVE_FILE > $ARCHIVE_FILE.sha256
       - name: "Upload binary"

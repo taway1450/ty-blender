@@ -25,7 +25,7 @@ TY_REPO = "https://github.com/astral-sh/ty"
 TY_ROOT = Path(__file__).parent.parent
 
 # The path to the JSON schema in the `ty` repository.
-TY_SCHEMA = TY_ROOT / "ruff" / "ty.schema.json"
+TY_SCHEMA = TY_ROOT / "ruff-blender" / "ty.schema.json"
 
 # The path to the JSON schema in the `schemastore` repository.
 TY_JSON = Path("schemas/json/ty.json")
@@ -157,12 +157,12 @@ def determine_git_protocol(argv: list[str] | None = None) -> GitProtocol:
 
 def main() -> None:
     expected_ruff_revision = check_output(
-        ["git", "ls-tree", "main", "--format", "%(objectname)", "ruff"],
+        ["git", "ls-tree", "main", "--format", "%(objectname)", "ruff-blender"],
         cwd=TY_ROOT,
         text=True,
     ).strip()
     actual_ruff_revision = check_output(
-        ["git", "-C", "ruff", "rev-parse", "HEAD"],
+        ["git", "-C", "ruff-blender", "rev-parse", "HEAD"],
         cwd=TY_ROOT,
         text=True,
     ).strip()
@@ -176,7 +176,7 @@ def main() -> None:
         ):
             case "u":
                 check_call(
-                    ["git", "-C", "ruff", "reset", "--hard", expected_ruff_revision],
+                    ["git", "-C", "ruff-blender", "reset", "--hard", expected_ruff_revision],
                     cwd=TY_ROOT,
                 )
             case "n":
