@@ -8,13 +8,13 @@
 #
 set -eu
 
-if [ ! -e ruff/.git ]; then
+if [ ! -e ruff-blender/.git ]; then
     echo "Initializing Ruff submodule..."
-    git submodule update --init --recursive ruff
+    git submodule update --init --recursive ruff-blender
 fi
 
 echo "Checking Ruff submodule status..."
-if git -C ruff diff --quiet; then
+if git -C ruff-blender diff --quiet; then
     echo "Ruff submodule is clean; continuing..."
 else
     echo "Ruff submodule has uncommitted changes; aborting!"
@@ -24,15 +24,15 @@ fi
 # Read the typeshed source commit from the Ruff revision recorded by the
 # superproject, before switching the submodule to its local main branch.
 typeshed_commit_path="crates/ty_vendored/vendor/typeshed/source_commit.txt"
-typeshed_commit_file="ruff/${typeshed_commit_path}"
-old_ruff_commit=$(git rev-parse HEAD:ruff)
-old_typeshed_commit=$(git -C ruff show "${old_ruff_commit}:${typeshed_commit_path}" 2> /dev/null || true)
+typeshed_commit_file="ruff-blender/${typeshed_commit_path}"
+old_ruff_commit=$(git rev-parse HEAD:ruff-blender)
+old_typeshed_commit=$(git -C ruff-blender show "${old_ruff_commit}:${typeshed_commit_path}" 2> /dev/null || true)
 
-ruff_head=$(git -C ruff rev-parse --abbrev-ref HEAD)
+ruff_head=$(git -C ruff-blender rev-parse --abbrev-ref HEAD)
 case "${ruff_head}" in
     "HEAD")
         echo "Ruff submodule has detached HEAD; switching to main..."
-        git -C ruff checkout main > /dev/null 2>&1
+        git -C ruff-blender checkout main > /dev/null 2>&1
         ;;
     "main")
         echo "Ruff submodule is on main branch; continuing..."
@@ -44,8 +44,8 @@ case "${ruff_head}" in
 esac
 
 echo "Updating Ruff to the latest commit..."
-git -C ruff pull origin main
-git add ruff
+git -C ruff-blender pull origin main
+git add ruff-blender
 
 script_root="$(realpath "$(dirname "$0")")"
 project_root="$(dirname "$script_root")"

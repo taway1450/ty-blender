@@ -64,8 +64,8 @@ exclude-newer = "P7D"
 cache-keys = [
     { file = "pyproject.toml" },
     { file = "dist-workspace.toml" },
-    { file = "ruff/Cargo.toml" },
-    { file = "ruff/Cargo.lock" },
+    { file = "ruff-blender/Cargo.toml" },
+    { file = "ruff-blender/Cargo.lock" },
     { file = "**/*.rs" },
 ]
 preview-features = ["build-dependency-hashes"]
@@ -147,7 +147,7 @@ docs = {requires-python = ">=3.12"}
 docker = {requires-python = ">=3.12"}
 
 [tool.ruff]
-extend-exclude = ["ruff"]
+extend-exclude = ["ruff-blender"]
 per-file-target-version = { "scripts/**" = "py313" }
 
 [tool.ruff.lint]
@@ -180,7 +180,7 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.maturin]
 bindings = "bin"
-manifest-path = "ruff/crates/ty/Cargo.toml"
+manifest-path = "ruff-blender/crates/ty/Cargo.toml"
 module-name = "ty"
 python-source = "python"
 strip = true
@@ -197,8 +197,8 @@ version-files = [
     { path = "dist-workspace.toml", field = "workspace.version", format = "cargo" },
     "docs/installation.md",
 ]
-submodules = ["ruff"]
-require-labels = [{ submodule = "ruff", labels = ["ty"] }]
+submodules = ["ruff-blender"]
+require-labels = [{ submodule = "ruff-blender", labels = ["ty"] }]
 ignore-labels = [
     "internal",
     "testing",

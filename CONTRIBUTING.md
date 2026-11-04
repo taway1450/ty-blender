@@ -17,11 +17,11 @@ repository, using generation scripts that live in
 [`crates/ruff_dev/src/`](https://github.com/astral-sh/ruff/blob/main/crates/ruff_dev/src/):
 
 - [Configuration options](https://docs.astral.sh/ty/reference/configuration/), from
-    [ruff/crates/ty_project/src/metadata/options.rs](https://github.com/astral-sh/ruff/blob/main/crates/ty_project/src/metadata/options.rs)
+    [ruff-blender/crates/ty_project/src/metadata/options.rs](https://github.com/astral-sh/ruff/blob/main/crates/ty_project/src/metadata/options.rs)
 - [Rules](https://docs.astral.sh/ty/reference/rules/), from
-    [ruff/crates/ty_python_semantic/src/](https://github.com/astral-sh/ruff/blob/main/crates/ty_python_semantic/src/)
+    [ruff-blender/crates/ty_python_semantic/src/](https://github.com/astral-sh/ruff/blob/main/crates/ty_python_semantic/src/)
 - [Command-line interface reference](https://docs.astral.sh/ty/reference/cli/), from
-    [ruff/crates/ty/src/args.rs](https://github.com/astral-sh/ruff/blob/main/crates/ty/src/args.rs)
+    [ruff-blender/crates/ty/src/args.rs](https://github.com/astral-sh/ruff/blob/main/crates/ty/src/args.rs)
 
 The Ruff repository is included as a submodule inside this repository to allow ty's release tags to reflect
 an exact snapshot of the Ruff project. The submodule is only updated on release. To see the latest development
@@ -66,13 +66,13 @@ uv build --build
 To update the Ruff submodule to the latest commit:
 
 ```shell
-git -C ruff pull origin main
+git -C ruff-blender pull origin main
 ```
 
 Or, to update the Ruff submodule to a specific commit:
 
 ```shell
-git -C ruff checkout <commit>
+git -C ruff-blender checkout <commit>
 ```
 
 Regenerate the files derived from the pinned Ruff revision:
@@ -81,30 +81,30 @@ Regenerate the files derived from the pinned Ruff revision:
 ./scripts/autogenerate_files.sh
 ```
 
-This also copies `ruff/rust-toolchain.toml` to the repository root so package builds use the same Rust
+This also copies `ruff-blender/rust-toolchain.toml` to the repository root so package builds use the same Rust
 toolchain as the pinned source. CI checks that the generated files match the submodule.
 
 To commit the changes:
 
 ```shell
-commit=$(git -C ruff rev-parse --short HEAD)
+commit=$(git -C ruff-blender rev-parse --short HEAD)
 git switch -c "sync/ruff-${commit}"
-git add ruff rust-toolchain.toml uv.lock docs/reference
+git add ruff-blender rust-toolchain.toml uv.lock docs/reference
 git commit -m "Update ruff submodule to https://github.com/astral-sh/ruff/commit/${commit}"
 ```
 
 To restore the Ruff submodule to a clean-state, reset, then update the submodule:
 
 ```shell
-git -C ruff reset --hard
+git -C ruff-blender reset --hard
 git submodule update
 ```
 
 To restore the Ruff submodule to the commit from `main`:
 
 ```shell
-git -C ruff reset --hard $(git ls-tree main -- ruff | awk '{print $3}')
-git add ruff
+git -C ruff-blender reset --hard $(git ls-tree main -- ruff-blender | awk '{print $3}')
+git add ruff-blender
 ```
 
 ## Documentation
