@@ -1,4 +1,4 @@
-[submodule "ruff"]
+[submodule "ruff-blender"]
 	path = ruff
 	url = https://github.com/taway1450/ruff-blender.git
 	branch = blender
